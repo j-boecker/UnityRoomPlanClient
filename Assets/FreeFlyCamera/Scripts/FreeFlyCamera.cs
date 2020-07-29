@@ -81,6 +81,16 @@ public class FreeFlyCamera : MonoBehaviour
             _wantedMode = CursorLockMode.Locked;
     }
 
+    private void OnDisable()
+    {
+        _wantedMode = CursorLockMode.None;
+        Cursor.lockState = _wantedMode = CursorLockMode.None;
+        // Apply cursor state
+        Cursor.lockState = _wantedMode;
+        // Hide cursor when locking
+        Cursor.visible = (CursorLockMode.Locked != _wantedMode);
+    }
+
     // Apply requested cursor state
     private void SetCursorState()
     {

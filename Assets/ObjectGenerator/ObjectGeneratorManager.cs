@@ -9,13 +9,14 @@ namespace Assets.ObjectGenerator
         public string UrlBase = "https://arwebapiproviderdemo.azurewebsites.net/api";
         public GameObject WallPrefab;
         private IRestObjectGenerator _wallGenerator;
+        public RotateText LoadingText;
 
         private int CurrentRoomId = 1;
         // Start is called before the first frame update
         void Start()
         {
             _wallGenerator = new RestWallGenerator(WallPrefab, UrlBase);
-            //_wallGenerator.SetServerObjectsToUnityObjectsScale(new Vector3(0.01f, 0.01f, 0.01f), Vector3.one, Vector3.one );
+            LoadingText.StopRotation();
         }
 
         // Update is called once per frame
@@ -29,6 +30,12 @@ namespace Assets.ObjectGenerator
             CurrentRoomId++;
         }
 
+        public void PreviousRoom()
+        {
+            if(CurrentRoomId > 1)
+                CurrentRoomId--;
+        }
+
         public void GenerateWalls()
         {
             //clear previous childs
@@ -37,7 +44,7 @@ namespace Assets.ObjectGenerator
                 GameObject.Destroy(child.gameObject);
             }
             _wallGenerator.SetServerObjectsToUnityObjectsScale(new Vector3(0.1f, 0.1f, 0.1f), Vector3.one, Vector3.one);
-            _wallGenerator.GenerateFetchedObjects(CurrentRoomId, this.gameObject);
+            _wallGenerator.GenerateFetchedObjects(CurrentRoomId, this.gameObject, LoadingText);
         }
     }
 }

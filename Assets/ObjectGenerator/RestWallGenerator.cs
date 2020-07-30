@@ -29,8 +29,10 @@ namespace Assets.ObjectGenerator
             _wallPrefab = prefab;
             _urlBase = urlBase;
         }
-        public void GenerateFetchedObjects(int roomId, GameObject parent)
+        public void GenerateFetchedObjects(int roomId, GameObject parent, RotateText loadingText = null)
         {
+            if(loadingText != null)
+             loadingText.StartRotation("Loading Objects...");
             RestClient.Get<RoomPlan>($"{_urlBase}/RoomPlans/{roomId}").Then(roomPlan =>
             {
                 foreach (var wallBlock in roomPlan.wallBlocks)
@@ -41,9 +43,15 @@ namespace Assets.ObjectGenerator
 
                     wallInstance.transform.parent = parent.transform;
                 }
+                if(loadingText != null)
+                  loadingText.StopRotation();
                 //move parent root
                 parent.transform.Translate(-1.5f, -0.5f, -1.5f);
-            }).Catch(response =>  EditorUtility.DisplayDialog("Error", response.Message, "Ok"));
+            }).Catch(error =>
+            {
+                if(loadingText != null)
+                    loadingText.StartRotation(error.Message);
+            });
         }
 
         public void SetServerObjectsToUnityObjectsScale(Vector3? lambdaPosition, Vector3? lambdaScale, Vector3? lambdaRotation)
